@@ -1,6 +1,10 @@
 'use client';
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
+import CampusMap from '@/components/CampusMap';
+import SystemHealth from '@/components/SystemHealth';
+import { db, isFirebaseConfigured } from '@/lib/firebase';
+import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore';
 import { RadialBarChart, RadialBar, PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line, Legend } from 'recharts';
 
 const COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6'];
@@ -36,10 +40,41 @@ export default function AdminDashboard() {
         { id: 3, type: 'info', msg: 'Priya Sharma marked absent – CS201', time: '09:30 AM' },
     ]);
 
+    const [students, setStudents] = useState(mockStudents);
+    const [stats, setStats] = useState(statCards);
+
     useEffect(() => {
         const tick = () => setTime(new Date().toLocaleTimeString('en-IN'));
         tick();
         const t = setInterval(tick, 1000);
+
+        if (isFirebaseConfigured) {
+            // Real-time Students
+            const studentsQuery = query(collection(db, 'users'), where('role', '==', 'student'), limit(5));
+            const unsubStudents = onSnapshot(studentsQuery, (snap) => {
+                const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (data.length > 0) setStudents(data);
+            });
+
+            // Real-time Alerts
+            const alertsQuery = query(collection(db, 'entry_logs'), where('security_alert', '==', true), orderBy('entry_time', 'desc'), limit(5));
+            const unsubAlerts = onSnapshot(alertsQuery, (snap) => {
+                const data = snap.docs.map(doc => ({
+                    id: doc.id,
+                    type: 'security',
+                    msg: `Alert: ${doc.data().sensor_count} persons detected at ${doc.data().gate_id}`,
+                    time: new Date(doc.data().entry_time?.toDate()).toLocaleTimeString()
+                }));
+                if (data.length > 0) setAlerts(data);
+            });
+
+            return () => {
+                clearInterval(t);
+                unsubStudents();
+                unsubAlerts();
+            };
+        }
+
         return () => clearInterval(t);
     }, []);
 
@@ -66,7 +101,7 @@ export default function AdminDashboard() {
 
             {/* Stat Cards */}
             <div className="grid-4" style={{ marginBottom: 24 }}>
-                {statCards.map((s, i) => (
+                {stats.map((s, i) => (
                     <div key={i} className="stat-card">
                         <div className="stat-icon" style={{ background: s.bg }}>
                             <span style={{ fontSize: 26 }}>{s.icon}</span>
@@ -113,6 +148,11 @@ export default function AdminDashboard() {
                         </PieChart>
                     </ResponsiveContainer>
                 </div>
+
+                {/* Campus Map */}
+                <div style={{ gridColumn: 'span 2' }}>
+                    <CampusMap activeGates={['main_gate']} />
+                </div>
             </div>
 
             {/* Students Table + Alerts */}
@@ -134,28 +174,28 @@ export default function AdminDashboard() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {mockStudents.map(s => (
+                                {students.map(s => (
                                     <tr key={s.id}>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                                <div className="avatar avatar-sm" style={{ background: s.attendance > 75 ? 'var(--grad-blue)' : 'var(--grad-amber)' }}>
-                                                    {s.name.charAt(0)}
+                                                <div className="avatar avatar-sm" style={{ background: (s.attendance || 0) > 75 ? 'var(--grad-blue)' : 'var(--grad-amber)' }}>
+                                                    {s.name?.charAt(0)}
                                                 </div>
                                                 <div>
                                                     <div style={{ fontWeight: 600, fontSize: 13 }}>{s.name}</div>
-                                                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.roll}</div>
+                                                    <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>{s.roll_no || s.roll}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td><span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--color-cyan)' }}>{s.rfid}</span></td>
+                                        <td><span style={{ fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--color-cyan)' }}>{s.rfid_uid || s.rfid}</span></td>
                                         <td>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                 <div style={{ flex: 1, maxWidth: 70 }}>
                                                     <div className="progress-bar" style={{ height: 5 }}>
-                                                        <div className={`progress-fill ${s.attendance >= 75 ? 'green' : 'amber'}`} style={{ width: `${s.attendance}%` }} />
+                                                        <div className={`progress-fill ${(s.attendance || 0) >= 75 ? 'green' : 'amber'}`} style={{ width: `${s.attendance || 0}%` }} />
                                                     </div>
                                                 </div>
-                                                <span style={{ fontSize: 12, fontWeight: 600 }}>{s.attendance}%</span>
+                                                <span style={{ fontSize: 12, fontWeight: 600 }}>{s.attendance || 0}%</span>
                                             </div>
                                         </td>
                                         <td>

@@ -6,6 +6,7 @@ const navConfig = {
     admin: [
         { section: 'Overview' },
         { href: '/admin/dashboard', icon: '📊', label: 'Dashboard' },
+        { href: '/admin/iot', icon: '📡', label: 'IoT Monitor' },
         { section: 'Management' },
         { href: '/admin/students', icon: '🧑‍🎓', label: 'Students' },
         { href: '/admin/teachers', icon: '👨‍🏫', label: 'Teachers' },

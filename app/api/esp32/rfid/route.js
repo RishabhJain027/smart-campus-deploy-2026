@@ -82,6 +82,21 @@ export async function POST(req) {
             const newBalance = student.wallet_balance - amount;
             localDB.updateUser(student.id, { wallet_balance: newBalance });
 
+            // Sync to sheets
+            try {
+                // array format: [id, student_id, name, action, date, status, method, time]
+                await appendToSheet([
+                    `txn_${Date.now()}`, 
+                    student.id, 
+                    student.name, 
+                    `Payment: Rs.${amount}`, 
+                    new Date().toISOString().split('T')[0], 
+                    'SUCCESS', 
+                    body.rfid_uid === 'Biometric_Auth' ? 'Biometrics' : 'RFID', 
+                    new Date().toISOString()
+                ]);
+            } catch(e) {}
+
             return NextResponse.json({ 
                 success: true, 
                 message: `PAID: Rs.${amount}. Bal: Rs.${newBalance}`,

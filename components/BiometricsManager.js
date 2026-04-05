@@ -241,7 +241,7 @@ export default function BiometricsManager({ userId, userName, mode = 'register',
                 style={{ display: 'flex', alignItems: 'center', gap: 8, ...style }}
             >
                 <span style={{ fontSize: 18 }}>{mode === 'register' ? '🫆' : '🔐'}</span>
-                {buttonText || (mode === 'register' ? 'Register Fingerprint' : 'Verify Fingerprint')}
+                {buttonText || (mode === 'register' ? 'Register Face ID / Fingerprint' : 'Verify Face ID / Fingerprint')}
             </button>
 
             {/* ── Overlay Modal ──────────────────────────────────── */}
@@ -279,14 +279,14 @@ export default function BiometricsManager({ userId, userName, mode = 'register',
                         {/* Scanning / Saving */}
                         {(scanPhase === 'scanning' || scanPhase === 'saving') && (<>
                             <div style={{ fontSize: 15, fontWeight: 800, marginBottom: 4, color: 'var(--color-cyan)', letterSpacing: '0.05em' }}>
-                                {mode === 'register' ? 'SCANNING FINGERPRINT' : 'VERIFYING IDENTITY'}
+                                {mode === 'register' ? 'SCANNING SECURE BIOMETRIC' : 'VERIFYING IDENTITY'}
                             </div>
                             <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 28 }}>
                                 {scanPhase === 'saving'
                                     ? 'Match found — your device biometric prompt will appear…'
                                     : mode === 'register'
-                                        ? 'Preparing… your mobile fingerprint prompt will appear next'
-                                        : 'Preparing… touch your fingerprint sensor when prompted'}
+                                        ? 'Preparing… your Face ID / Fingerprint prompt will appear next'
+                                        : 'Preparing… look at camera or touch sensor when prompted'}
                             </div>
 
                             {/* SVG Fingerprint */}
@@ -330,8 +330,8 @@ export default function BiometricsManager({ userId, userName, mode = 'register',
                             <div style={{ fontSize: 22, fontWeight: 900, color: '#60a5fa' }}>{scanProgress}%</div>
                             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
                                 {scanProgress < 100
-                                    ? `Reading ridge patterns… ${litRidges}/${FINGERPRINT_RIDGES.length}`
-                                    : '👆 Touch your fingerprint sensor now'}
+                                    ? `Reading biometric patterns… ${litRidges}/${FINGERPRINT_RIDGES.length}`
+                                    : '👆 Authenticate with Face ID or Sensor now'}
                             </div>
                             {scanPhase === 'saving' && (
                                 <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, color: '#f59e0b', fontSize: 13 }}>
@@ -348,7 +348,7 @@ export default function BiometricsManager({ userId, userName, mode = 'register',
                                     {saveStatus.backend ? '✅' : saveStatus.local ? '⚠️' : '❌'}
                                 </div>
                                 <div style={{ fontSize: 16, fontWeight: 800, marginBottom: 4, color: saveStatus.backend ? '#22c55e' : '#f59e0b' }}>
-                                    {mode === 'register' ? 'Fingerprint Registered!' : 'Identity Verified!'}
+                                    {mode === 'register' ? 'Secure Biometric Added!' : 'Identity Verified!'}
                                 </div>
                                 <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 20 }}>
                                     {mode === 'register' ? 'Data saved to:' : 'Verification result:'}

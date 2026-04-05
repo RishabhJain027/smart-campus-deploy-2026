@@ -5,7 +5,7 @@ import { localDB } from '@/lib/localDB';
 export async function POST(req) {
     try {
         const body = await req.json();
-        const { student_id, rfid_uid, face_embedding, image_url } = body;
+        const { student_id, rfid_uid, face_embedding, image_url, passkey_id } = body;
 
         if (!student_id) {
             return NextResponse.json({ error: 'Missing student ID' }, { status: 400 });
@@ -18,6 +18,11 @@ export async function POST(req) {
              updates.face_status = 'trained';
         }
         if (image_url !== undefined) updates.profile_photo = image_url;
+        if (passkey_id !== undefined) {
+            updates.passkey_id = passkey_id;
+            updates.biometric_registered = true;
+            updates.biometric_registered_at = new Date().toISOString();
+        }
 
         const updatedUser = localDB.updateUser(student_id, updates);
 

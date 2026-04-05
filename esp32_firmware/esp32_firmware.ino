@@ -14,7 +14,7 @@ const char *WIFI_PASSWORD = "12345678";
 
 // ── SERVER CONFIG ─────────────────────────────────────────────
 const char *SERVER_BASE =
-    "https://yourdomain.com"; // or http://192.168.1.X:3000 locally
+    "https://psr-campus.onrender.com"; // deployed cloud backend
 const char *API_KEY =
     "esp32_secret_2026"; // must match ESP32_API_KEY in .env.local
 

@@ -19,7 +19,10 @@ export async function POST(req) {
         // 1. Find user by student_id OR RFID
         const users = localDB.getStudents();
         let student = null;
-        if (body.student_id) {
+        
+        if (rfid_uid === 'AUTO_EXIT_IR') {
+            student = { id: 'anonymous', name: 'Auto Exit (IR Sensor)', wallet_balance: 0 };
+        } else if (body.student_id) {
             student = users.find(u => u.id === body.student_id);
         } else {
             student = users.find(u => u.rfid_uid && u.rfid_uid.replace(/\s/g, '').toUpperCase() === rfid_uid.replace(/\s/g, '').toUpperCase());

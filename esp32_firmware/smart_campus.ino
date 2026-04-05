@@ -370,14 +370,15 @@ void reconnectWiFi() {
  *  │ 3.3V    │ 3.3V      │
  *  └─────────┴───────────┘
  *
- *  HC-SR04 ULTRASONIC SENSOR:
+ *  HC-SR05 ULTRASONIC SENSOR:
  *  ┌─────────┬───────────┐
  *  │ Sensor  │ ESP32     │
  *  ├─────────┼───────────┤
- *  │ VCC     │ 5V (VIN)  │
+ *  │ VCC     │ 5V (VIN)* │
  *  │ GND     │ GND       │
  *  │ TRIG    │ GPIO 12   │
  *  │ ECHO    │ GPIO 14   │
+ *  │ OUT     │ (Not used)│
  *  └─────────┴───────────┘
  *
  *  BUZZER:
@@ -391,21 +392,38 @@ void reconnectWiFi() {
  *  │ LCD     │ ESP32     │
  *  ├─────────┼───────────┤
  *  │ SDA     │ GPIO 21   │
- *  │ SCL     │ GPIO 22   │  (shared, configure jumper)
- *  │ VCC     │ 5V        │
+ *  │ SCL     │ GPIO 22   │
+ *  │ VCC     │ 5V*       │
  *  │ GND     │ GND       │
  *  └─────────┴───────────┘
+ *
+ *  IR SENSOR & SERVO:
+ *  IR OUT   → GPIO 13
+ *  SERVO IN → GPIO 15
+ *  Servo & IR VCC → *External 5V Power Supply*
  *
  *  LED INDICATORS:
  *  Green LED (+) → GPIO 26 → 220Ω resistor → GND
  *  Red   LED (+) → GPIO 25 → 220Ω resistor → GND
  *
  * ===================================================================
+ *  CRITICAL WIRING NOTE (EXTERNAL POWER & COMMON GROUND):
+ * ===================================================================
+ *  Because the ESP32 cannot supply enough current for the Servo and 
+ *  I2C LCD simultaneously, you MUST use an external 5V power supply.
+ *  
+ *  RULE 1: Connect the (+) of the external supply ONLY to the Servo, 
+ *          LCD, and IR Sensor VCC pins. DO NOT connect it into the 
+ *          ESP32 3V3 Pin!
+ *  RULE 2: MUST COMMON GROUND! You MUST connect the GND of the external
+ *          power supply to the GND pin of the ESP32. If you don't form 
+ *          a common ground, the data pulses (PWM) will not work.
+ * ===================================================================
  *  DEPLOYMENT STEPS
  * ===================================================================
  *  1. Install Arduino IDE + ESP32 board package
- *  2. Install libraries: MFRC522, ArduinoJson, LiquidCrystal_I2C
- *  3. Set WIFI_SSID, WIFI_PASSWORD, SERVER_BASE, API_KEY
+ *  2. Install libraries: MFRC522, ArduinoJson, LiquidCrystal_I2C, ESP32Servo
+ *  3. Set WIFI_SSID, WIFI_PASSWORD
  *  4. Select: Tools → Board → ESP32 Dev Module
  *  5. Select: Tools → Port → COMx (your ESP32 port)
  *  6. Upload and open Serial Monitor at 115200 baud

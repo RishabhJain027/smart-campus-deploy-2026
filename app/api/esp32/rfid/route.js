@@ -16,9 +16,14 @@ export async function POST(req) {
             return NextResponse.json({ error: 'Missing RFID UID' }, { status: 400 });
         }
 
-        // 1. Find user by RFID
+        // 1. Find user by student_id OR RFID
         const users = localDB.getStudents();
-        const student = users.find(u => u.rfid_uid && u.rfid_uid.replace(/\s/g, '').toUpperCase() === rfid_uid.replace(/\s/g, '').toUpperCase());
+        let student = null;
+        if (body.student_id) {
+            student = users.find(u => u.id === body.student_id);
+        } else {
+            student = users.find(u => u.rfid_uid && u.rfid_uid.replace(/\s/g, '').toUpperCase() === rfid_uid.replace(/\s/g, '').toUpperCase());
+        }
 
         if (!student) {
             return NextResponse.json({ 

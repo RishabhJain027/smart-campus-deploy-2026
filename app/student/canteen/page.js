@@ -171,12 +171,33 @@ export default function StudentCanteen() {
                             {user && <BiometricsManager 
                                 userId={user.id} 
                                 mode="authenticate" 
-                                buttonText="Pay with Fingerprint" 
+                                buttonText="Pay with Face ID / Fingerprint" 
                                 style={{ width: '100%', height: 48, fontSize: 14, justifyContent: 'center' }}
-                                onSuccess={(cred) => {
-                                    setRfidStatus('success');
-                                    setBalance(prev => prev - totalCost);
-                                    setTimeout(() => { setCart([]); setRfidStatus('idle'); }, 2000);
+                                onSuccess={async (cred) => {
+                                    setRfidStatus('scanning');
+                                    // Hit the endpoint to deduct the actual DB balance
+                                    const res = await fetch('/api/esp32/rfid', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            hardware_id: 'Canteen_Terminal_1',
+                                            student_id: user.id,
+                                            rfid_uid: user.rfid_uid || 'Biometric_Auth',
+                                            action: 'canteen',
+                                            amount: totalCost
+                                        })
+                                    });
+                                    const data = await res.json();
+                                    
+                                    if (data.success) {
+                                        setRfidStatus('success');
+                                        setBalance(prev => prev - totalCost);
+                                        setTimeout(() => { setCart([]); setRfidStatus('idle'); }, 2000);
+                                    } else {
+                                        setRfidStatus('failed');
+                                        alert("Payment Error: " + (data.message || "Insufficient balance or invalid auth"));
+                                        setTimeout(() => setRfidStatus('idle'), 2000);
+                                    }
                                 }}
                             />}
                         </div>

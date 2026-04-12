@@ -61,6 +61,15 @@ export async function POST(req) {
                 ]);
             } catch(e) {}
 
+            // Send WhatsApp notification for gate entry
+            try {
+                if (student.phone) {
+                    const { sendWhatsAppMessage, buildGateEntryMessage } = await import('@/lib/whatsapp');
+                    const msg = buildGateEntryMessage(student.name, hardware_id || 'Main Campus Gate', new Date().toLocaleTimeString('en-IN'), 'RFID');
+                    await sendWhatsAppMessage(student.phone, msg);
+                }
+            } catch(e) {}
+
             return NextResponse.json({ 
                 success: true, 
                 message: `ACCESS GRANTED: ${student.name.split(' ')[0]}`,

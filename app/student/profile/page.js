@@ -112,6 +112,117 @@ export default function StudentProfile() {
         }
     };
 
+    // ── Download Digital ID as image ──
+    const downloadDigitalID = (u) => {
+        const canvas = document.createElement('canvas');
+        const W = 600, H = 360;
+        canvas.width = W; canvas.height = H;
+        const ctx = canvas.getContext('2d');
+
+        // Background gradient
+        const bg = ctx.createLinearGradient(0, 0, W, H);
+        bg.addColorStop(0, '#1E4E6E');
+        bg.addColorStop(0.6, '#3A7FA3');
+        bg.addColorStop(1, '#6FAED2');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, W, H);
+
+        // Watermark circle
+        ctx.beginPath();
+        ctx.arc(W + 20, -20, 140, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255,255,255,0.04)';
+        ctx.fill();
+
+        // Top: institution
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        ctx.font = 'bold 11px Arial';
+        ctx.letterSpacing = '3px';
+        ctx.fillText('SAKEC SMART CAMPUS', 30, 40);
+
+        // Student badge
+        ctx.fillStyle = 'rgba(230,197,106,0.15)';
+        const bdgX = W - 110, bdgY = 22;
+        ctx.beginPath();
+        ctx.roundRect(bdgX, bdgY, 80, 24, 12);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(230,197,106,0.3)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        ctx.fillStyle = '#e6c56a';
+        ctx.font = 'bold 11px Arial';
+        ctx.fillText('STUDENT', bdgX + 12, bdgY + 16);
+
+        // Name
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 28px Arial';
+        ctx.fillText(u.name, 30, 78);
+
+        // Department
+        ctx.fillStyle = 'rgba(255,255,255,0.6)';
+        ctx.font = '14px Arial';
+        ctx.fillText(`${u.department} · Semester ${u.semester}`, 30, 102);
+
+        // Divider
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.beginPath(); ctx.moveTo(30, 120); ctx.lineTo(W - 30, 120); ctx.stroke();
+
+        // QR placeholder area
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.roundRect(30, 140, 120, 120, 12);
+        ctx.fill();
+
+        // QR pattern simulation
+        ctx.fillStyle = '#1E4E6E';
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                if (Math.random() > 0.4) {
+                    ctx.fillRect(40 + i * 10, 150 + j * 10, 8, 8);
+                }
+            }
+        }
+
+        // Info fields
+        const fields = [
+            { label: 'STUDENT ID', value: u.id },
+            { label: 'EMAIL', value: u.email },
+            { label: 'PHONE', value: u.phone || 'N/A' },
+            { label: 'RFID UID', value: u.rfid_uid || 'Not linked' },
+        ];
+
+        let y = 155;
+        fields.forEach(f => {
+            ctx.fillStyle = 'rgba(255,255,255,0.45)';
+            ctx.font = '9px Arial';
+            ctx.fillText(f.label, 180, y);
+            ctx.fillStyle = '#D9F1FF';
+            ctx.font = 'bold 13px Arial';
+            ctx.fillText(f.value, 180, y + 16);
+            y += 34;
+        });
+
+        // Bottom strip
+        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+        ctx.beginPath(); ctx.moveTo(30, H - 40); ctx.lineTo(W - 30, H - 40); ctx.stroke();
+
+        ctx.fillStyle = 'rgba(255,255,255,0.35)';
+        ctx.font = '10px monospace';
+        ctx.fillText('Scan QR to verify identity', 30, H - 18);
+
+        // Active dot
+        ctx.fillStyle = '#7FE0FF';
+        ctx.beginPath(); ctx.arc(W - 80, H - 22, 4, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#7FE0FF';
+        ctx.font = 'bold 10px Arial';
+        ctx.fillText('ACTIVE', W - 70, H - 18);
+
+        // Download
+        const link = document.createElement('a');
+        link.download = `${u.name.replace(/\s/g, '_')}_Digital_ID.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    };
+
     if (!user) {
         return (
             <DashboardLayout title="Student Profile">
@@ -284,8 +395,13 @@ export default function StudentProfile() {
             {/* ── Digital ID + Security Log ── */}
             <div className="grid-2" style={{ gap: 24 }}>
                 <div className="card">
-                    <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ color: 'var(--color-gold)' }}>🪪</span> Digital ID Card
+                    <h3 style={{ fontSize: 18, fontWeight: 800, marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span style={{ color: 'var(--color-gold)' }}>🪪</span> Digital ID Card
+                        </div>
+                        <button className="btn btn-outline btn-sm" onClick={() => downloadDigitalID(user)} style={{ fontSize: 11 }}>
+                            ⬇️ Download ID
+                        </button>
                     </h3>
                     {/* Premium ocean-themed ID card */}
                     <div style={{

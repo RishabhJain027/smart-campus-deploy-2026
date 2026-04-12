@@ -504,80 +504,171 @@ img {
 .btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 10px 20px;
+    padding: 10px 22px;
     border-radius: var(--radius-sm);
     font-size: 14px;
     font-weight: 600;
-    transition: var(--transition);
+    letter-spacing: 0.01em;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* Shimmer highlight on all buttons */
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -60%;
+    width: 40%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.5s ease;
+    pointer-events: none;
+}
+.btn:hover::before {
+    left: 110%;
+}
+
+/* ── iPhone Glass Button ── */
+.btn-glass {
+    background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.18) 0%,
+        rgba(255, 255, 255, 0.06) 50%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.25),
+        inset 0 -1px 0 rgba(0,0,0,0.15),
+        0 4px 20px rgba(0,0,0,0.2);
+}
+.btn-glass:hover {
+    background: linear-gradient(
+        160deg,
+        rgba(255, 255, 255, 0.28) 0%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0.05) 100%
+    );
+    border-color: rgba(255, 255, 255, 0.35);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.4),
+        inset 0 -1px 0 rgba(0,0,0,0.1),
+        0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* ── Mirror Button (liquid metal) ── */
+.btn-mirror {
+    background: linear-gradient(
+        135deg,
+        rgba(180, 210, 240, 0.9) 0%,
+        rgba(120, 170, 220, 0.6) 30%,
+        rgba(80, 130, 200, 0.8) 50%,
+        rgba(120, 170, 220, 0.6) 70%,
+        rgba(180, 210, 240, 0.9) 100%
+    );
+    background-size: 200% 200%;
+    color: #0a1929;
+    font-weight: 700;
+    border: 1px solid rgba(200, 230, 255, 0.5);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.6),
+        0 2px 12px rgba(80,120,200,0.4);
+    animation: mirrorShift 4s ease infinite;
+}
+.btn-mirror:hover {
+    background-size: 300% 300%;
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.8),
+        0 6px 24px rgba(80,120,200,0.6);
+    transform: translateY(-2px);
+}
+@keyframes mirrorShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .btn-primary {
-    background: var(--grad-blue);
+    background: linear-gradient(135deg, #4ea8de, #2a7fc1, #80ffdb);
+    background-size: 200% 200%;
     color: #fff;
-    box-shadow: 0 4px 18px rgba(30, 78, 110, 0.5);
+    box-shadow: 0 4px 20px rgba(78,168,222,0.4);
+    animation: btnShimmer 3s ease infinite;
 }
-
+@keyframes btnShimmer {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 28px rgba(58, 127, 163, 0.6);
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 8px 30px rgba(78,168,222,0.6);
 }
 
 .btn-success {
-    background: linear-gradient(135deg, #10b981, #059669);
+    background: linear-gradient(135deg, #10b981, #059669, #34d399);
+    background-size: 200%;
     color: #fff;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
 }
-
 .btn-success:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 25px rgba(16, 185, 129, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #ef4444, #dc2626);
+    background: linear-gradient(135deg, #ef4444, #dc2626, #f87171);
+    background-size: 200%;
     color: #fff;
-    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.35);
 }
-
 .btn-danger:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 25px rgba(239, 68, 68, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(239, 68, 68, 0.5);
 }
 
 .btn-outline {
-    background: rgba(58, 127, 163, 0.08);
+    background: rgba(58, 127, 163, 0.06);
     color: var(--color-aqua);
-    border: 1px solid rgba(111, 174, 210, 0.3);
+    border: 1px solid rgba(111, 174, 210, 0.28);
+    backdrop-filter: blur(8px);
 }
-
 .btn-outline:hover {
-    background: rgba(58, 127, 163, 0.2);
+    background: rgba(58, 127, 163, 0.18);
     color: #fff;
     border-color: rgba(127, 224, 255, 0.5);
-    box-shadow: 0 0 15px rgba(127, 224, 255, 0.2);
+    box-shadow: 0 0 18px rgba(127, 224, 255, 0.2);
+    transform: translateY(-1px);
 }
 
 .btn-ghost {
     background: var(--bg-card);
     color: var(--text-secondary);
     border: 1px solid var(--border);
+    backdrop-filter: blur(8px);
 }
-
 .btn-ghost:hover {
     background: var(--bg-card-hover);
     color: var(--text-primary);
+    transform: translateY(-1px);
 }
 
 .btn-sm {
-    padding: 7px 14px;
-    font-size: 13px;
+    padding: 6px 14px;
+    font-size: 12px;
+    border-radius: 10px;
 }
 
 .btn-lg {
-    padding: 13px 28px;
-    font-size: 16px;
+    padding: 13px 30px;
+    font-size: 15px;
     border-radius: var(--radius-md);
 }
 
@@ -587,9 +678,66 @@ img {
 }
 
 .btn:disabled {
-    opacity: 0.5;
+    opacity: 0.45;
     cursor: not-allowed;
     transform: none !important;
+    animation: none !important;
+    pointer-events: none;
+}
+
+/* ─── GLASS UTILITY CLASSES ──────────────────────────────────── */
+.glass {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.1),
+        0 8px 32px rgba(0,0,0,0.2);
+}
+
+.glass-blue {
+    background: rgba(78, 168, 222, 0.06);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(78, 168, 222, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.1), 0 4px 20px rgba(0,8,20,0.2);
+}
+
+.glass-dark {
+    background: rgba(5, 15, 35, 0.7);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid rgba(255,255,255,0.06);
+}
+
+/* Mirror / liquid-metal card effect */
+.mirror-card {
+    background: linear-gradient(
+        145deg,
+        rgba(120,180,240,0.15) 0%,
+        rgba(60,100,180,0.08) 40%,
+        rgba(20,50,120,0.05) 60%,
+        rgba(100,160,220,0.12) 100%
+    );
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(160, 210, 255, 0.2);
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.18),
+        inset 0 -1px 0 rgba(0,20,60,0.3),
+        0 10px 40px rgba(0,10,40,0.35);
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
+}
+.mirror-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(200,230,255,0.5), transparent);
+    pointer-events: none;
 }
 
 /* ─── FORMS ──────────────────────────────────────────────────── */

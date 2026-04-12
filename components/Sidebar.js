@@ -70,8 +70,25 @@ export default function Sidebar({ role = 'student', user = {} }) {
     return (
         <aside className="sidebar">
             {/* Brand */}
-            <div className="sidebar-brand" style={{ padding: '24px 20px' }}>
-                <img src="/psr-logo.png" alt="PSR Logo" style={{ height: 45, width: 'auto' }} />
+            <div className="sidebar-brand" style={{ padding: '18px 20px 14px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <img 
+                    src="/psr-logo.png" 
+                    alt="PSR Campus" 
+                    style={{ 
+                        height: 42, width: 'auto', 
+                        filter: 'drop-shadow(0 0 8px rgba(169,222,249,0.4))',
+                        transition: 'filter 0.3s'
+                    }} 
+                />
+                <div>
+                    <div style={{ 
+                        fontSize: 13, fontWeight: 800, 
+                        background: 'linear-gradient(135deg, #a9def9, #fff, #89c2d9)',
+                        WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                        letterSpacing: '0.02em', lineHeight: 1.2
+                    }}>PSR Campus</div>
+                    <div style={{ fontSize: 9, color: 'var(--text-muted)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 1 }}>Smart System</div>
+                </div>
             </div>
 
             {/* Navigation */}
